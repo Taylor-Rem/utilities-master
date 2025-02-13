@@ -1,5 +1,5 @@
 from OS.os import Os
-from config import pc_username, kmc_username, kmc_password
+from config import kmc_username, kmc_password
 
 class JobInfo:
     def __init__(self, job):
@@ -10,7 +10,7 @@ class JobInfo:
         self.init(job)
 
     def init(self, job):
-        os_ops = Os(job)
+        os_ops = Os()
         self.job_info = {}
         self.job_info['title'] = job
         self.job_info['login_info']= {'kmc_username': kmc_username, 'kmc_password': kmc_password}
@@ -34,6 +34,6 @@ class JobInfo:
                 'abt_url': f"{abt_url_start}{value['abt_url']}",
                 'kmc_url': f'{self.kmc_url_start}properties/{value['propid']}/imports',
                 'import_date': import_date,
-                'file_path': os_ops.adjust_file_path(value['title'], import_date)
+                'file_path': os_ops.adjust_file_path(value['title'], import_date, self.job_info['title'])
             }
         return return_info
