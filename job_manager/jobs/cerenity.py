@@ -1,0 +1,2 @@
+class Cereniti:
+    pass
