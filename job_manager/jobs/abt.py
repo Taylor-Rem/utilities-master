@@ -1,10 +1,12 @@
 from selenium.webdriver.common.by import By
+from resmap_ops.resmap_import import ResmapImport
 import os
 
 class Abt:
     def __init__(self, browser, job_info, thread):
         self.browser = browser
         self.thread = thread
+        self.resmap_import = ResmapImport(browser, thread)
         self.login_info = job_info['login_info']
         self.run_job(job_info)
 
@@ -20,7 +22,8 @@ class Abt:
 
             if self.thread.is_cancelled:
                 break
-            self.upload_to_manage_portal(value)
+            # self.upload_to_manage_portal(value)
+            self.resmap_import.import_file(value['kmc_url'], value['dropdowns'], value['file_path'])
 
     def download_from_abt(self, property):
         self.browser.driver.get(property['abt_url'])
@@ -30,31 +33,3 @@ class Abt:
         if self.thread.is_cancelled:
             return
         self.browser.find_click(By.XPATH, '//input[@type="submit" and @value="Go!"]')
-
-    def upload_to_manage_portal(self, property):
-        self.browser.driver.get(property['kmc_url'])
-        self.browser.wait_login(self.login_info['kmc_username'], self.login_info['kmc_password'])
-        self.select_kmc_element(property)
-
-
-    def select_kmc_element(self, property):
-        dropdowns = [
-            {'value': '//div[@class="flex-row card-text"]//details[@class="auto_complete"]', 'key': '//li[normalize-space(text())="Utility Reads - ABT"]'},
-            {'value': '//div[@class="alert-info full-width"]//details[@class="auto_complete"]', 'key': '//li[normalize-space(text())="Water"]'}
-            ]
-        for dropdown in dropdowns:
-            if self.thread.is_cancelled:
-                break
-            self.browser.wait_click(By.XPATH, dropdown['value'])
-            self.browser.wait_for_presence_of_element(By.CSS_SELECTOR, 'ul.popup')
-            self.browser.wait_click(By.XPATH, dropdown['key'])
-
-        if self.thread.is_cancelled:
-            return
-        self.browser.wait_for_downloads()
-        self.browser.wait_for_presence_of_element(By.CSS_SELECTOR, 'input[type="file"]').send_keys(property['file_path'])
-        self.browser.wait_for_load()
-        if self.thread.is_cancelled:
-            return
-        self.browser.wait_click(By.XPATH, '//div[contains(@class, "flex-row alert-info full-width")]/button[@type="button" and contains(@class, "primary push_button")]')
-        self.browser.wait_for_load()

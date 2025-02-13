@@ -12,7 +12,7 @@ from selenium.common.exceptions import (
     ElementNotInteractableException,
 )
 
-from config import pc_username
+from config import pc_username, kmc_username, kmc_password
 import time
 import os
 
@@ -94,14 +94,14 @@ class BrowserMethods(BrowserBase):
         element = self.wait_for_presence_of_element(by, value)
         element.click()
 
-    def login(self, username, password):
+    def login(self, username=kmc_username, password=kmc_password):
         try:
             self.send_keys(By.NAME, "username", username)
             self.send_keys(By.NAME, "password", password, True)
         except NoSuchElementException:
             pass
 
-    def wait_login(self, username, password):
+    def wait_login(self, username=kmc_username, password=kmc_password):
         self.wait_for_page_load()
         self.login(username, password)
 

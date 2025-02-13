@@ -12,14 +12,16 @@ class JobInfo:
     def init(self, job):
         os_ops = Os()
         self.job_info = {}
+        self.return_info = {}
         self.job_info['title'] = job
         self.job_info['login_info']= {'kmc_username': kmc_username, 'kmc_password': kmc_password}
         match job:
             case 'abt':
                 self.job_info['info'] = self.abt_import(os_ops)
+            case 'cereniti':
+                self.job_info['info'] = self.cereniti_import()
 
     def abt_import(self, os_ops):
-        return_info = {}
         abt_url_start = 'http://12.175.8.66/Usage%20Reports/All/KMC%20'
 
         property_info = [
@@ -30,10 +32,27 @@ class JobInfo:
         
         for value in property_info:
             import_date = f"{os_ops.month}/{value['day']}/{os_ops.year}"
-            return_info[value['title']] = {
+            self.return_info[value['title']] = {
                 'abt_url': f"{abt_url_start}{value['abt_url']}",
                 'kmc_url': f'{self.kmc_url_start}properties/{value['propid']}/imports',
                 'import_date': import_date,
-                'file_path': os_ops.adjust_file_path(value['title'], import_date, self.job_info['title'])
+                'file_path': os_ops.adjust_file_path(value['title'], import_date, self.job_info['title']),
+                'dropdowns': ["Utility Reads - ABT", "Water"]
             }
-        return return_info
+        return self.return_info
+
+    def cereniti_import(self):
+        property_info = [
+            {"title": "Sherwood Forest", "propid": 3, "cereniti_url": 'blah'},
+            {"title": "Westcrest Water", "propid": 18, "cereniti_url": 'blah'},
+            {"title": "Westcrest Electric", "propid": 18, "cereniti_url": 'blah'},
+            {"title": "Shadow Ridge", "propid": 37, "cereniti_url": 'blah'},
+            {"title": "Majestic Oaks", "propid": 13, "cereniti_url": 'blah'},
+            {"title": "Mountain View", "propid": 14, "cereniti_url": 'blah'}
+        ]
+
+        for value in property_info:
+            self.return_info[value['title']] = {
+                'cereniti_url': 'blah',
+                'kmc_url': f'{self.kmc_url_start}properties/{value['propid']}/imports',
+            }

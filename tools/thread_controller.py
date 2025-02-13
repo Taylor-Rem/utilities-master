@@ -12,14 +12,8 @@ class ThreadController(QThread):
         self.job_info = job_info
         self.browser = browser
         self._is_running = True 
-        self.setup_thread(thread_window)
-        
-    def setup_thread(self, thread_window):
-         # Connect signals to update the thread window.
-        self.progress_signal.connect(thread_window.update_progress)
-        self.finished_signal.connect(thread_window.on_finished)
         thread_window.thread_controller = self
-
+        
     @property
     def is_cancelled(self):
         return not self._is_running
