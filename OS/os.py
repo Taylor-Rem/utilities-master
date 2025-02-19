@@ -1,4 +1,4 @@
-import os
+import os, glob
 from datetime import datetime
 from config import pc_username, download_path
 
@@ -9,7 +9,9 @@ class Os:
         self.day = datetime.now().strftime("%d")
         self.today_date = f"{self.month}/{self.day}/{self.year}"
 
-    def adjust_file_path(self, title, date, job_name):
+    def adjust_file_path(self, title, job_name, date=None):
+        if not date:
+            date = self.today_date
         date_info = date.split("/")
         match job_name:
             case 'abt':

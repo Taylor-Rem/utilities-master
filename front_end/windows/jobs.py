@@ -1,9 +1,9 @@
-from front_end.base_windows.methods import Methods
 from tools.thread_controller import ThreadController
+from front_end.windows.job_methods import JobMethods
 from tools.browser import Browser
 from functools import partial
 
-class Jobs(Methods):
+class Jobs(JobMethods):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
@@ -19,22 +19,14 @@ class Jobs(Methods):
         match job_info['title']:
             case 'abt':
                 self.abt_info(job_info)
+            case 'cereniti':
+                self.cereniti_info(job_info)
 
-    def abt_info(self, job_info):
-        for title, info in job_info['info'].items():
-            info['include'] = False
-            checkbox = self.create_checkbox(title)
-            checkbox.stateChanged.connect(
-                lambda state, cb=checkbox, inf=info: inf.update({'include': cb.isChecked()})
-                )
-            date_input = self.create_text_input(info['import_date'], info['import_date'])
-            date_input.textChanged.connect(
-                lambda text, tit=title, inf=info: self.handle_date_change(text, tit, inf, job_info['title']))
-            
     def run_job(self, job_info):
         self.clear_layout()
         browser = Browser()
         thread_window = self.controller.window_instances['thread']
         self.thread_controller = ThreadController(job_info, thread_window, browser)
+        self.thread_controller.finished_signal.connect(lambda: self.controller.switch_window('main'))
         self.controller.switch_window('thread')
         self.thread_controller.start()

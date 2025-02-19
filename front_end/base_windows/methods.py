@@ -12,7 +12,7 @@ class Methods(BaseWindow):
         button.clicked.connect(function)
         self.layout.addWidget(button)
 
-    def create_checkbox(self, title, initial_state=False):
+    def create_checkbox(self, title, initial_state=True):
         checkbox = QCheckBox(title, self)
         checkbox.setChecked(initial_state)
         self.layout.addWidget(checkbox)
