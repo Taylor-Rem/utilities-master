@@ -8,6 +8,7 @@ class Os:
         self.month = datetime.now().strftime("%m")
         self.day = datetime.now().strftime("%d")
         self.today_date = f"{self.month}/{self.day}/{self.year}"
+        self.today_date_file = f"{self.month}-{self.day}-{self.year}"
 
     def adjust_file_path(self, title, job_name, date=None):
         if not date:

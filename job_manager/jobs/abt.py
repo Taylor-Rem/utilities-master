@@ -6,17 +6,19 @@ import os
 class Abt(JobsBase):
     def __init__(self, browser, job_info, thread):
         super().__init__(browser, job_info, thread)
+        self.resmap_import = ResmapImport(browser, thread)
         self.run_job()
 
     def run_job(self):
-        for value in self.job_info['info'].values():
+        for value in self.job_info['info']:
             if not value['include']:
                 continue
             if not os.path.exists(value['file_path']):
                 self.download_from_abt(value)
             if self.cancelled():
                 return
-            ResmapImport(self.browser, self.thread).import_file(value['propid'], value['dropdowns'], value['file_path'])
+            for value in self.job_info['info']:
+                self.resmap_import.import_file(value['propid'], value['dropdowns'], value['file_path'])
 
     def download_from_abt(self, value):
         self.browser.driver.get(value['abt_url'])
