@@ -27,7 +27,11 @@ class Methods(BaseWindow):
     
     def handle_date_change(self, text, tit, inf, job_title):
         inf.update({'import_date': text})
-        inf.update({'file_path': Os().adjust_file_path(tit, text, job_title)})
+        match job_title:
+            case 'abt':
+                inf.update({'file_path': Os().adjust_file_path(tit, text)})
+            case 'cereniti':
+                inf.update({'adjusted_file_path': f"{inf['file_path'].split('.')[0]}-{text.replace('/', '-')}.csv"})
 
     def clear_layout(self):
         while self.layout.count():
