@@ -5,7 +5,7 @@ class Thread(Methods):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.thread_controller = None  # will hold our QThread instance
+        self.thread_controller = None
         self.init_ui()
 
     def init_ui(self):
@@ -16,7 +16,9 @@ class Thread(Methods):
         self.create_button('Cancel', self.cancel_operation)
 
     def cancel_operation(self):
-        # Called when the user clicks Cancel.
         if self.thread_controller:
             self.thread_controller.cancel()
-            self.controller.switch_window('main')
+            self.finish_operation()
+
+    def finish_operation(self):
+        self.controller.switch_window('main')

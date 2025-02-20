@@ -1,12 +1,14 @@
 from selenium.webdriver.common.by import By
+from config import kmc_url
 
 class ResmapImport:
     def __init__(self, browser, thread):
         self.browser = browser
         self.thread = thread
 
-    def import_file(self, url, dropdown_values, file_path):
-        self.browser.driver.get(url)
+    def import_file(self, propid, dropdown_values, file_path):
+        self.browser.driver.get(f"{kmc_url}properties/{propid}/imports")
+        self.browser.driver.refresh()
         self.browser.wait_login()
         dropdowns = [{
                 'value': '//div[@class="flex-row card-text"]//details[@class="auto_complete"]',
@@ -24,7 +26,7 @@ class ResmapImport:
 
         if self.thread.is_cancelled:
             return
-        self.browser.wait_for_downloads()
+        # self.browser.wait_for_downloads_to_finish()
         self.browser.wait_for_presence_of_element(By.CSS_SELECTOR, 'input[type="file"]').send_keys(file_path)
         self.browser.wait_for_load()
         if self.thread.is_cancelled:

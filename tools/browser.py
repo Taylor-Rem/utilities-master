@@ -12,22 +12,22 @@ from selenium.common.exceptions import (
     ElementNotInteractableException,
 )
 
-from config import pc_username, kmc_username, kmc_password
+from config import download_path, kmc_username, kmc_password
 import time
 import os
 
 class BrowserBase:
     def __init__(self):
         options = Options()
-        self.download_dir = f"/Users/{pc_username}/Downloads/bot_downloads"
         options.add_experimental_option("prefs", {
-            "download.default_directory": self.download_dir,  # Set the download directory
+            "download.default_directory": download_path,  # Set the download directory
             "download.prompt_for_download": False,       # Disable download prompts
             "download.directory_upgrade": True,          # Automatically overwrite
             "safebrowsing.enabled": True                 # Enable safe browsing
         })
         self.driver = webdriver.Chrome(service=Service(), options=options)
-        self.wait = WebDriverWait(self.driver, 30)
+        self.wait = WebDriverWait(self.driver, 60)
+        self.primary_tab = None
 
     def close(self):
         if self.driver:
@@ -38,17 +38,77 @@ class BrowserMethods(BrowserBase):
     def __init__(self):
         super().__init__()
 
-        import time
+    def new_tab(self):
+        self.driver.execute_script("window.open('about:blank', '_blank');")
+        self.driver.switch_to.window(self.driver.window_handles[-1])
 
-    def wait_for_downloads(self, timeout=30):
+    def switch_to_primary_tab(self):
+        if self.primary_tab is None:
+            self.primary_tab = self.driver.window_handles[0]
+        else:
+            try:
+                current_tab = self.driver.current_window_handle
+                if current_tab != self.primary_tab:
+                    self.driver.close()
+            except NoSuchWindowException:
+                pass
+        self.driver.switch_to.window(self.primary_tab)
+
+    def close_all_tabs_except_primary(self):
+        if self.primary_tab is None:
+            self.primary_tab = self.driver.window_handles[0]
+        try:
+            # Get all current window handles
+            all_tabs = self.driver.window_handles
+            
+            # Loop through all tabs except the primary tab
+            for tab in all_tabs:
+                if tab != self.primary_tab:
+                    # Switch to the tab
+                    self.driver.switch_to.window(tab)
+                    # Close it
+                    self.driver.close()
+        
+            # Switch back to primary tab
+            self.driver.switch_to.window(self.primary_tab)
+        except NoSuchWindowException:
+            pass
+
+    def wait_for_file_count_increase(self, timeout=30):
+        """Wait for the number of files in the download directory to increase."""
+        initial_file_count = len(os.listdir(download_path))
+        end_time = time.time() + timeout
+
+        while time.time() < end_time:
+            current_file_count = len(os.listdir(download_path))
+            if current_file_count > initial_file_count:
+                return True  # A new file has appeared in the directory
+            
+            time.sleep(0.5)  # Check again after a short delay
+        
+        raise TimeoutError("Download did not start within the timeout period.")
+
+
+    def wait_for_download_to_start(self, timeout=30):
+        """Wait for a download to start in the given directory."""
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            files = os.listdir(download_path)
+            if any(file.endswith('.crdownload') or file.endswith('.part') for file in files):
+                return True  # A download has started
+            time.sleep(0.5)  # Check again after a short delay
+        raise TimeoutError("Download did not start within the timeout period.")
+
+
+    def wait_for_downloads_to_finish(self, timeout=30):
         """Wait for all downloads to complete in the given directory."""
         end_time = time.time() + timeout
         while time.time() < end_time:
             # Check if there are any incomplete downloads
-            files = os.listdir(self.download_dir)
+            files = os.listdir(download_path)
             if not any(file.endswith('.crdownload') or file.endswith('.part') for file in files):
                 return True
-            time.sleep(1)  # Wait a bit before re-checking
+            time.sleep(.5)  # Wait a bit before re-checking
         raise TimeoutError("Download did not complete within the timeout period.")
     
     def wait_for_page_load(self):
@@ -104,6 +164,10 @@ class BrowserMethods(BrowserBase):
     def wait_login(self, username=kmc_username, password=kmc_password):
         self.wait_for_page_load()
         self.login(username, password)
+
+    def define_rows(self, by, value):
+        tbody = self.wait_for_presence_of_element(by, value)
+        return tbody.find_elements(By.XPATH, ".//tr")
 
 class Browser(BrowserMethods):
     def __init__(self):

@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 from job_manager.jobs.abt import Abt
-from job_manager.jobs.cerenity import Cereniti
+from job_manager.jobs.cereniti import Cereniti
 
 class ThreadController(QThread):
     progress_signal = pyqtSignal(str)
@@ -22,7 +22,6 @@ class ThreadController(QThread):
         try:
             globals()[self.job_info['title'].title()](self.browser, self.job_info, self)
             self.finished_signal.emit()
-            self.browser.close()
         except Exception as e:
             print("Error in ThreadController:", e)
         finally:

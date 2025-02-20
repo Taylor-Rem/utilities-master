@@ -1,35 +1,34 @@
 from selenium.webdriver.common.by import By
+from job_manager.jobs.jobs_base import JobsBase
 from resmap_ops.resmap_import import ResmapImport
 import os
 
-class Abt:
+class Abt(JobsBase):
     def __init__(self, browser, job_info, thread):
-        self.browser = browser
-        self.thread = thread
+        super().__init__(browser, job_info, thread)
         self.resmap_import = ResmapImport(browser, thread)
-        self.login_info = job_info['login_info']
-        self.run_job(job_info)
+        self.run_job()
 
-    def run_job(self, job_info):
-        for value in job_info['info'].values():
-            if self.thread.is_cancelled:
-                break
+    def run_job(self):
+        for value in self.job_info['info']:
             if not value['include']:
                 continue
-
             if not os.path.exists(value['file_path']):
                 self.download_from_abt(value)
+            if self.cancelled():
+                return
+        for value in self.job_info['info']:
+            if not value['include']:
+                continue
+            if self.cancelled():
+                return
+            self.resmap_import.import_file(value['propid'], value['dropdowns'], value['file_path'])
 
-            if self.thread.is_cancelled:
-                break
-            # self.upload_to_manage_portal(value)
-            self.resmap_import.import_file(value['kmc_url'], value['dropdowns'], value['file_path'])
-
-    def download_from_abt(self, property):
-        self.browser.driver.get(property['abt_url'])
+    def download_from_abt(self, value):
+        self.browser.driver.get(value['abt_url'])
         self.browser.find_click(By.XPATH, '//input[@type="submit" and @value="Export a Readings File"]')
-        self.browser.send_keys(By.XPATH, '//input[@type="TEXT" and @name="The Date"]', property['import_date'])
+        self.browser.send_keys(By.XPATH, '//input[@type="TEXT" and @name="The Date"]', value['import_date'])
         self.browser.find_select(By.NAME, 'ExportFormat', 'Starnik')
-        if self.thread.is_cancelled:
+        if self.cancelled():
             return
         self.browser.find_click(By.XPATH, '//input[@type="submit" and @value="Go!"]')
