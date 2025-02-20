@@ -46,6 +46,7 @@ class Cereniti(JobsBase):
         row.click()
         self.browser.driver.execute_script("ConsumersList();")
         self.browser.wait_for_page_load()
+        self.browser.send_keys(By.NAME, "toDate", value['import_date'])
         self.browser.driver.execute_script("ExportReadings();")
         self.browser.wait_for_file_count_increase()
         os.rename(value['file_path'], value['adjusted_file_path'])

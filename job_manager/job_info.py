@@ -31,7 +31,7 @@ class JobInfo:
                 'abt_url': f"{abt_url_start}{value['abt_url']}",
                 'propid': value['propid'],
                 'import_date': f"{self.os_ops.month}/{value['day']}/{self.os_ops.year}",
-                'file_path': self.os_ops.adjust_file_path(value['title'], self.job_info['title'], f"{self.os_ops.month}/{value['day']}/{self.os_ops.year}"),
+                'file_path': self.os_ops.adjust_file_path(value['title'], f"{self.os_ops.month}/{value['day']}/{self.os_ops.year}"),
                 'dropdowns': ["Utility Reads - ABT", "Water"]
             }
             for value in property_info
@@ -40,19 +40,20 @@ class JobInfo:
     def cereniti_import(self):
 
         property_info = [
-            {"title": "Sherwood Forest", "propid": 3},
-            {"title": "Westcrest", "propid": 18},
-            {"title": "Shadow Ridge", "propid": 37},
-            {"title": "Majestic Oaks", "propid": 13},
-            {"title": "Mountain View", "propid": 14},
-            {"title": "Westcrest Electric", "propid": 18, "fee": "Electricity"}
+            {"title": "Sherwood Forest", "propid": 3, 'day': '05'},
+            {"title": "Westcrest", "propid": 18, 'day': 10},
+            {"title": "Shadow Ridge", "propid": 37, 'day': 10},
+            {"title": "Majestic Oaks", "propid": 13, 'day': 10},
+            {"title": "Mountain View", "propid": 14, 'day': 10},
+            {"title": "Westcrest Electric", "propid": 18, 'day': 10, "fee": "Electricity"}
         ]
         return [
             {
                 'title': value['title'],
                 'propid': value['propid'],
+                'import_date': f"{self.os_ops.month}/{value['day']}/{self.os_ops.year}",
                 'file_path': f"{download_path}/{re.sub(r'[\s-]+', '_', value['title'].strip().lower())}.csv",
-                'adjusted_file_path': f"{download_path}/{re.sub(r'[\s-]+', '_', value['title'].strip().lower())}-{self.os_ops.today_date_file}.csv",
+                'adjusted_file_path': f"{download_path}/{re.sub(r'[\s-]+', '_', value['title'].strip().lower())}-{self.os_ops.month}-{value['day']}-{self.os_ops.year}.csv",
                 'dropdowns': ["Utility Reads - Cereniti", "Water" if 'fee' not in value else value['fee']],
             }
             for value in property_info
