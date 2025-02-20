@@ -17,8 +17,12 @@ class Abt(JobsBase):
                 self.download_from_abt(value)
             if self.cancelled():
                 return
-            for value in self.job_info['info']:
-                self.resmap_import.import_file(value['propid'], value['dropdowns'], value['file_path'])
+        for value in self.job_info['info']:
+            if not value['include']:
+                continue
+            if self.cancelled():
+                return
+            self.resmap_import.import_file(value['propid'], value['dropdowns'], value['file_path'])
 
     def download_from_abt(self, value):
         self.browser.driver.get(value['abt_url'])

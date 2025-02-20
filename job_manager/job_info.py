@@ -45,7 +45,7 @@ class JobInfo:
             {"title": "Shadow Ridge", "propid": 37},
             {"title": "Majestic Oaks", "propid": 13},
             {"title": "Mountain View", "propid": 14},
-            {"title": "Westcrest Electric", "propid": 18, "fee": "Electric"}
+            {"title": "Westcrest Electric", "propid": 18, "fee": "Electricity"}
         ]
         return [
             {

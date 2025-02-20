@@ -15,7 +15,8 @@ class Cereniti(JobsBase):
     def run_job(self):
         self.download_from_cereniti()
         for value in self.job_info['info']:
-            self.resmap_import.import_file(value['propid'], value['dropdowns'], value['adjusted_file_path'])
+            if value['include']:
+                self.resmap_import.import_file(value['propid'], value['dropdowns'], value['adjusted_file_path'])
             
     def download_from_cereniti(self):
         # Check if files are downloaded already
@@ -51,16 +52,18 @@ class Cereniti(JobsBase):
         self.browser.switch_to_primary_tab()
 
     def modify_pdf(self, value):
-        file_path = value['adjusted_file_path']
+        csv_manager = CsvManager(value['adjusted_file_path'])
         match value['propid']:
             # Sherwood
             case 3:
-                self.pdf_action(file_path, 'replace', [{'start': 1, 'end': 121}])
+                csv_manager.replace_unit_columns([{'start': 1, 'end': 121}])
             # Westcrest
             case 18:
-                self.pdf_action(file_path, 'replace', [{'start': 1, 'end': 47},{'start': 101, 'end': 147},{'start': 201, 'end': 232},{'start': 237, 'end': 260},{'start': 265, 'end': 276},{'start': 1001, 'end': 1093}])
+                csv_manager.replace_unit_columns([{'start': 1, 'end': 47},{'start': 101, 'end': 147},{'start': 201, 'end': 232},{'start': 237, 'end': 260},{'start': 265, 'end': 276},{'start': 1001, 'end': 1093}])
 
-        self.pdf_action(file_path, 'prepare')
+        csv_manager.convert_units()
+        csv_manager.delete_empty_rows()
+        csv_manager.save_csv()
 
     def login(self):
         self.browser.driver.get(self.job_info['cereniti_url'])
@@ -71,13 +74,3 @@ class Cereniti(JobsBase):
             self.browser.send_keys(By.NAME, 'password', cereniti_password, True)
         except:
             pass
-
-    def pdf_action(self, path, action, ranges=[]):
-        csv_manager = CsvManager(path)
-        match action:
-            case 'prepare':
-                csv_manager.delete_empty_rows()
-                csv_manager.convert_units()
-            case 'delete':
-                csv_manager.delete_empty_rows()
-        csv_manager.save_csv()

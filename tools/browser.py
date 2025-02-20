@@ -74,7 +74,7 @@ class BrowserMethods(BrowserBase):
         except NoSuchWindowException:
             pass
 
-    def wait_for_file_count_increase(self, timeout=10):
+    def wait_for_file_count_increase(self, timeout=30):
         """Wait for the number of files in the download directory to increase."""
         initial_file_count = len(os.listdir(download_path))
         end_time = time.time() + timeout
@@ -89,7 +89,7 @@ class BrowserMethods(BrowserBase):
         raise TimeoutError("Download did not start within the timeout period.")
 
 
-    def wait_for_download_to_start(self, timeout=10):
+    def wait_for_download_to_start(self, timeout=30):
         """Wait for a download to start in the given directory."""
         end_time = time.time() + timeout
         while time.time() < end_time:
