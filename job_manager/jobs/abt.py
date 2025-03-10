@@ -26,7 +26,9 @@ class Abt(JobsBase):
 
     def download_from_abt(self, value):
         self.browser.driver.get(value['abt_url'])
+        self.browser.wait_for_presence_of_element(By.XPATH, '//input[@type="submit" and @value="Export a Readings File"]')
         self.browser.find_click(By.XPATH, '//input[@type="submit" and @value="Export a Readings File"]')
+        self.browser.wait_for_presence_of_element(By.XPATH, '//input[@type="TEXT" and @name="The Date"]')
         self.browser.send_keys(By.XPATH, '//input[@type="TEXT" and @name="The Date"]', value['import_date'])
         self.browser.find_select(By.NAME, 'ExportFormat', 'Starnik')
         if self.cancelled():
