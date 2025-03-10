@@ -17,6 +17,7 @@ class Cereniti(JobsBase):
         for value in self.job_info['info']:
             if value['include']:
                 self.resmap_import.import_file(value['propid'], value['dropdowns'], value['adjusted_file_path'])
+        time.sleep(3)
             
     def download_from_cereniti(self):
         # Check if files are downloaded already

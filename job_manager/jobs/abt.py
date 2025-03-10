@@ -1,7 +1,7 @@
 from selenium.webdriver.common.by import By
 from job_manager.jobs.jobs_base import JobsBase
 from resmap_ops.resmap_import import ResmapImport
-import os
+import os, time
 
 class Abt(JobsBase):
     def __init__(self, browser, job_info, thread):
@@ -23,6 +23,7 @@ class Abt(JobsBase):
             if self.cancelled():
                 return
             self.resmap_import.import_file(value['propid'], value['dropdowns'], value['file_path'])
+        time.sleep(3)
 
     def download_from_abt(self, value):
         self.browser.driver.get(value['abt_url'])
