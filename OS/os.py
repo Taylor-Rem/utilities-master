@@ -14,5 +14,5 @@ class Os:
         if not date:
             date = self.today_date
         date_info = date.split("/")
-        return os.path.join(download_path, f"SPUD for KMC {title} {date_info[0]}-{date_info[1]}-{date_info[2]}.csv")
+        return os.path.join(download_path, f"SPUD for KMC {title} {date_info[0]}_{date_info[1]}_{date_info[2]}.csv")
 

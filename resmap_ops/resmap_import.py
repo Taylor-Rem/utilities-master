@@ -19,20 +19,17 @@ class ResmapImport:
             }]
         for dropdown in dropdowns:
             if self.thread.is_cancelled:
-                self.browser.wait_for_downloads_to_finish()
                 return
             self.browser.wait_click(By.XPATH, dropdown['value'])
             self.browser.wait_for_presence_of_element(By.CSS_SELECTOR, 'ul.popup')
             self.browser.wait_click(By.XPATH, dropdown['key'])
 
         if self.thread.is_cancelled:
-            self.browser.wait_for_downloads_to_finish()
             return
-        # self.browser.wait_for_downloads_to_finish()
+
         self.browser.wait_for_presence_of_element(By.CSS_SELECTOR, 'input[type="file"]').send_keys(file_path)
         self.browser.wait_for_load()
         if self.thread.is_cancelled:
-            self.browser.wait_for_downloads_to_finish()
             return
         self.browser.wait_click(By.XPATH, '//div[contains(@class, "flex-row alert-info full-width")]/button[@type="button" and contains(@class, "primary push_button")]')
         self.browser.wait_for_load()
