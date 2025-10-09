@@ -22,8 +22,8 @@ class Abt(JobsBase):
                 continue
             if self.cancelled():
                 return
-            self.resmap_import.import_file(value['propid'], value['dropdowns'], value['file_path'])
-        time.sleep(3)
+            self.resmap_import.import_file(value['propid'], value['dropdowns'], value['file_path'], value['import_date'])
+        time.sleep(2)
 
     def download_from_abt(self, value):
         self.browser.driver.get(value['abt_url'])
@@ -35,3 +35,4 @@ class Abt(JobsBase):
         if self.cancelled():
             return
         self.browser.find_click(By.XPATH, '//input[@type="submit" and @value="Go!"]')
+        time.sleep(.5)
