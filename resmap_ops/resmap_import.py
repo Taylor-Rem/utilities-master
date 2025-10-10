@@ -63,6 +63,6 @@ class ResmapImport:
         self.browser.wait_for_load()
         if self.thread.is_cancelled:
             return
-        time.sleep(3)
+        time.sleep(2)
         self.browser.wait_click(By.XPATH, '//div[contains(@class, "flex-row alert-info full-width")]/button[@type="button" and contains(@class, "primary push_button")]')
         self.browser.wait_for_load()

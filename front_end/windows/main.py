@@ -11,7 +11,7 @@ class Main(Methods):
         self.init_ui()
 
     def init_ui(self):
-        jobs = ['abt', 'cereniti']
+        jobs = ['abt', 'cereniti', 'beacon']
         self.setWindowTitle("Utilities Tool")
         for job in jobs:
             self.create_button(job.title(), partial(self.init_job, job))

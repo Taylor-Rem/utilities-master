@@ -69,10 +69,5 @@ class Cereniti(JobsBase):
 
     def login(self):
         self.browser.driver.get(self.job_info['cereniti_url'])
-        self.browser.wait_for_page_load()
-        try:
-            self.browser.wait_for_presence_of_element(By.NAME, 'userid')
-            self.browser.send_keys(By.NAME, 'userid', cereniti_username)
-            self.browser.send_keys(By.NAME, 'password', cereniti_password, True)
-        except:
-            pass
+        self.browser.wait_send_keys(By.NAME, 'userid', cereniti_username)
+        self.browser.wait_send_keys(By.NAME, 'password', cereniti_password, "enter")

@@ -1,5 +1,7 @@
 from OS.os import Os
-from config import download_path
+from config import download_path, beacon_park_info_path
+from job_manager.property_info import property_info_obj
+import pandas as pd
 import re
 
 class JobInfo:
@@ -16,15 +18,14 @@ class JobInfo:
             case 'cereniti':
                 self.job_info['cereniti_url'] = "https://www.myspeednet.net"
                 self.job_info['info'] = self.cereniti_import()
+            case 'beacon':
+                self.job_info['beacon_url'] = "https://beaconama.net/admin/portfolio/at_a_glance"
+                self.job_info['info'] = self.beacon_import()
 
     def abt_import(self):
-        return_info = {}
         abt_url_start = 'http://12.175.8.66/Usage%20Reports/All/KMC%20'
-        property_info = [
-            {"title": "Arapaho Village", "propid": 76, 'abt_url': 'Arapaho%20Village.html', 'day': 15},
-            {"title": "Haven Cove", "propid": 66, 'abt_url': 'Haven%20Cove.html', 'day': 10},
-            {"title": "Lake Villa", "propid": 59, 'abt_url': 'Lake%20Villa.html', 'day': 10}
-            ]
+        property_info = self.get_property_info(["Arapaho Village", "Haven Cove", "Lake Villa"])
+
         return [
             {
                 'title': value['title'],
@@ -38,15 +39,10 @@ class JobInfo:
         ]
 
     def cereniti_import(self):
+        property_info = self.get_property_info([
+            "Sherwood Forest", "Westcrest", "Shadow Ridge", "Majestic Oaks", "Mountain View", "Westcrest Electric"
+        ])
 
-        property_info = [
-            {"title": "Sherwood Forest", "propid": 3, 'day': '05'},
-            {"title": "Westcrest", "propid": 18, 'day': 10},
-            {"title": "Shadow Ridge", "propid": 37, 'day': 10},
-            {"title": "Majestic Oaks", "propid": 13, 'day': 10},
-            {"title": "Mountain View", "propid": 14, 'day': 10},
-            {"title": "Westcrest Electric", "propid": 18, 'day': 10, "fee": "Electricity"}
-        ]
         return [
             {
                 'title': value['title'],
@@ -58,3 +54,21 @@ class JobInfo:
             }
             for value in property_info
         ]
+    
+    def beacon_import(self):
+        df = pd.read_csv(beacon_park_info_path)
+        not_uploaded = df[df['uploaded'].astype(str).str.upper() == 'FALSE']
+
+        return [
+            {
+                'title': row['full_name'],
+                'propid': row['propid'],
+                'import_date': f"{self.os_ops.month}/{row['beacon_import_date']}/{self.os_ops.year}",
+                'park_num': row['park_num'],
+                'short_name': row['shortened_name']
+            }
+            for _, row in not_uploaded.iterrows()
+        ]
+
+    def get_property_info(self, properties):
+        return [property_info_obj[p] for p in properties]

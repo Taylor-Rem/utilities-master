@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 from job_manager.jobs.abt import Abt
 from job_manager.jobs.cereniti import Cereniti
+from job_manager.jobs.beacon import Beacon
 
 class ThreadController(QThread):
     progress_signal = pyqtSignal(str)

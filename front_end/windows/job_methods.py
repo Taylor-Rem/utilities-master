@@ -5,15 +5,20 @@ class JobMethods(Methods):
     def __init__(self):
         super().__init__()
 
-    def abt_info(self, job_info):
+    def set_job_info(self, job_info):
         for info in job_info['info']:
             self.include_properties(info['title'], info)
             self.change_dates(info, job_info['title'])
+
+    # def abt_info(self, job_info):
+    #     for info in job_info['info']:
+    #         self.include_properties(info['title'], info)
+    #         self.change_dates(info, job_info['title'])
             
-    def cereniti_info(self, job_info):
-        for info in job_info['info']:
-            self.include_properties(info['title'], info)
-            self.change_dates(info, job_info['title'])
+    # def cereniti_info(self, job_info):
+    #     for info in job_info['info']:
+    #         self.include_properties(info['title'], info)
+    #         self.change_dates(info, job_info['title'])
             
     def include_properties(self, title, info):
         info['include'] = True
