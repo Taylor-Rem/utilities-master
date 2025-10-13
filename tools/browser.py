@@ -145,9 +145,13 @@ class BrowserMethods(BrowserBase):
             self.send_keys_to_element(element, keys, extra)
 
     def wait_scroll_click(self, by, value):
-        element = self.wait_for_presence_of_element(by, value)
+        element = self.wait_for_element_clickable(by, value)
         self.scroll_to_element(element)
+        time.sleep(.25)
         element.click()
+
+    def scroll_to_top(self):
+        self.driver.execute_script("window.scrollTo(0, 0);")
 
     def scroll_to_element(self, element):
         actions = ActionChains(self.driver)

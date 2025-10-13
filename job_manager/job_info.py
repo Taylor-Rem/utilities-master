@@ -65,7 +65,10 @@ class JobInfo:
                 'propid': row['propid'],
                 'import_date': f"{self.os_ops.month}/{row['beacon_import_date']}/{self.os_ops.year}",
                 'park_num': row['park_num'],
-                'short_name': row['shortened_name']
+                'short_name': row['shortened_name'],
+                'file_path': f"{download_path}/billing_reads-export.csv",
+                'adjusted_file_path': f"{download_path}/beacon-export-{row['shortened_name']}",
+                'dropdowns': ["Utility Reads - Beacon", "Water"]
             }
             for _, row in not_uploaded.iterrows()
         ]

@@ -1,5 +1,4 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from config import kmc_url
 from datetime import datetime
 import time
