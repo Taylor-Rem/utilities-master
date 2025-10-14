@@ -1,5 +1,7 @@
 from front_end.base_windows.base import BaseWindow
 from OS.os import Os
+from PyQt5.QtWidgets import QDateEdit
+from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLineEdit, QCheckBox, QPushButton
 
 
@@ -25,13 +27,13 @@ class Methods(BaseWindow):
         self.layout.addWidget(text_input)
         return text_input
     
-    def handle_date_change(self, text, tit, inf, job_title):
-        inf.update({'import_date': text})
-        match job_title:
-            case 'abt':
-                inf.update({'file_path': Os().adjust_file_path(tit, text)})
-            case 'cereniti':
-                inf.update({'adjusted_file_path': f"{inf['file_path'].split('.')[0]}-{text.replace('/', '-')}.csv"})
+    def create_date_input(self, date_str):
+        date_input = QDateEdit(self)
+        date = QDate.fromString(date_str, "yyyy-MM-dd")
+        date_input.setDate(date)
+        date_input.setCalendarPopup(True)
+        self.layout.addWidget(date_input)
+        return date_input
 
     def clear_layout(self):
         while self.layout.count():

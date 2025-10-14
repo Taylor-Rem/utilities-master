@@ -9,49 +9,40 @@ class Cereniti(JobsBase):
     def __init__(self, browser, job_info, thread):
         super().__init__(browser, job_info, thread)
         self.resmap_import = ResmapImport(browser, thread)
-        self.define_rows = lambda: (self.login(), self.browser.define_rows(By.XPATH, '/html/body/table/tbody/tr/td[2]/div[3]/table/tbody/tr/td[1]/div/div[2]/table/tbody'))[1]
         self.run_job()
 
     def run_job(self):
-        self.download_from_cereniti()
+        if any(not os.path.exists(value['adjusted_file_path']) for value in self.job_info['info']):
+            self.login()
+            self.download_from_cereniti()
         for value in self.job_info['info']:
             if value['include']:
                 self.resmap_import.import_file(value['propid'], value['dropdowns'], value['adjusted_file_path'], value['import_date'])
         time.sleep(3)
             
     def download_from_cereniti(self):
-        # Check if files are downloaded already
-        if len([item for item in self.job_info['info'] if not os.path.exists(item['adjusted_file_path'])]) < 1:
-            # Modify files
-            for value in self.job_info['info']:
-                self.modify_pdf(value)
-            return
-        rows = self.define_rows()
-        idx = 0
-        while idx < len(rows):
-            if self.cancelled():
-                return
-            value = self.job_info['info'][idx]
-            if not value['include'] or os.path.exists(value['adjusted_file_path']):
-                idx += 1
+        for val in self.job_info['info']:
+            try:
+                os.remove(val['file_path'])
+            except:
+                pass
+            if os.path.exists(val['adjusted_file_path']):
                 continue
-            self.download_file(value, rows[idx])
-            self.modify_pdf(value)
-            if (idx + 1 == len(rows)):
-                break
-            rows = self.define_rows()
-            idx += 1
+            self.download_file(val)
+            self.modify_pdf(val)
         self.browser.close_all_tabs_except_primary()
 
-    def download_file(self, value, row):
-        row.click()
+    def download_file(self, value):
+        self.browser.wait_click(By.XPATH, f"//tr[td[normalize-space(text())='{value['title']}']]")
         self.browser.driver.execute_script("ConsumersList();")
         self.browser.wait_for_page_load()
         self.browser.send_keys(By.NAME, "toDate", value['import_date'])
         self.browser.driver.execute_script("ExportReadings();")
-        self.browser.wait_for_file_count_increase()
+        self.browser.wait_for_file_count_increase(60)
+        time.sleep(.25)
         os.rename(value['file_path'], value['adjusted_file_path'])
         self.browser.switch_to_primary_tab()
+        self.browser.driver.execute_script("SitesList();")
 
     def modify_pdf(self, value):
         csv_manager = CsvManager(value['adjusted_file_path'])

@@ -31,8 +31,9 @@ class JobInfo:
                 'title': value['title'],
                 'abt_url': f"{abt_url_start}{value['abt_url']}",
                 'propid': value['propid'],
-                'import_date': f"{self.os_ops.month}/{value['day']}/{self.os_ops.year}",
-                'file_path': self.os_ops.adjust_file_path(value['title'], f"{self.os_ops.month}/{value['day']}/{self.os_ops.year}"),
+                'import_date': f"{self.os_ops.year}-{self.os_ops.month}-{value['day']}",
+                'file_path': f"{download_path}/SPUD for KMC {value['title']}",
+                'adjusted_file_path': f"{download_path}/abt_{value['shortname']}",
                 'dropdowns': ["Utility Reads - ABT", "Water"]
             }
             for value in property_info
@@ -47,9 +48,9 @@ class JobInfo:
             {
                 'title': value['title'],
                 'propid': value['propid'],
-                'import_date': f"{self.os_ops.month}/{value['day']}/{self.os_ops.year}",
+                'import_date': f"{self.os_ops.year}-{self.os_ops.month}-{value['day']}",
                 'file_path': f"{download_path}/{re.sub(r'[\s-]+', '_', value['title'].strip().lower())}.csv",
-                'adjusted_file_path': f"{download_path}/{re.sub(r'[\s-]+', '_', value['title'].strip().lower())}-{self.os_ops.month}-{value['day']}-{self.os_ops.year}.csv",
+                'adjusted_file_path': f"{download_path}/cereniti_{value['shortname']}",
                 'dropdowns': ["Utility Reads - Cereniti", "Water" if 'fee' not in value else value['fee']],
             }
             for value in property_info
@@ -63,11 +64,11 @@ class JobInfo:
             {
                 'title': row['full_name'],
                 'propid': row['propid'],
-                'import_date': f"{self.os_ops.month}/{row['beacon_import_date']}/{self.os_ops.year}",
+                'import_date': f"{self.os_ops.year}-{self.os_ops.month}-{row['beacon_import_date']}",
                 'park_num': row['park_num'],
                 'short_name': row['shortened_name'],
                 'file_path': f"{download_path}/billing_reads-export.csv",
-                'adjusted_file_path': f"{download_path}/beacon-export-{row['shortened_name']}",
+                'adjusted_file_path': f"{download_path}/beacon_{row['shortened_name']}",
                 'dropdowns': ["Utility Reads - Beacon", "Water"]
             }
             for _, row in not_uploaded.iterrows()
