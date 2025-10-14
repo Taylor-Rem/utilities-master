@@ -147,7 +147,7 @@ class BrowserMethods(BrowserBase):
     def wait_scroll_click(self, by, value):
         element = self.wait_for_element_clickable(by, value)
         self.scroll_to_element(element)
-        time.sleep(.5)
+        time.sleep(1)
         element.click()
 
     def scroll_to_top(self):
@@ -176,7 +176,7 @@ class BrowserMethods(BrowserBase):
         return wait.until(EC.element_to_be_clickable((by, value)))
     
     def wait_click(self, by, value, timeout=None):
-        element = self.wait_for_element_clickable(by, value)
+        element = self.wait_for_element_clickable(by, value, timeout)
         element.click()
 
     def login(self, username=kmc_username, password=kmc_password):
