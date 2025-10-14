@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
     NoSuchElementException,
@@ -18,6 +19,7 @@ import os
 
 class BrowserBase:
     def __init__(self):
+        self.timeout_time = 60
         options = Options()
         options.add_experimental_option("prefs", {
             "download.default_directory": download_path,  # Set the download directory
@@ -26,7 +28,7 @@ class BrowserBase:
             "safebrowsing.enabled": True                 # Enable safe browsing
         })
         self.driver = webdriver.Chrome(service=Service(), options=options)
-        self.wait = WebDriverWait(self.driver, 60)
+        self.wait = WebDriverWait(self.driver, self.timeout_time)
         self.primary_tab = None
 
     def close(self):
@@ -132,32 +134,55 @@ class BrowserMethods(BrowserBase):
         element = self.find_element(by, value)
         element.click()
 
-    def send_keys(self, by, value, keys, enter=False):
+    def wait_send_keys(self, by, value, keys, extra=None):
+        element = self.wait_for_presence_of_element(by, value)
+        if element:
+            self.send_keys_to_element(element, keys, extra)
+
+    def send_keys(self, by, value, keys, extra=None):
         element = self.find_element(by, value)
         if element:
-            self.send_keys_to_element(element, keys, enter)
+            self.send_keys_to_element(element, keys, extra)
 
-    def send_keys_to_element(self, element, keys, enter=False):
+    def wait_scroll_click(self, by, value):
+        element = self.wait_for_element_clickable(by, value)
+        self.scroll_to_element(element)
+        time.sleep(.5)
+        element.click()
+
+    def scroll_to_top(self):
+        self.driver.execute_script("window.scrollTo(0, 0);")
+
+    def scroll_to_element(self, element):
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+        # actions = ActionChains(self.driver)
+        # actions.move_to_element(element).perform()
+
+    def send_keys_to_element(self, element, keys, extra=None):
         try:
             element.clear()
             element.send_keys(keys)
-            if enter:
-                element.send_keys(Keys.ENTER)
+            if extra:
+                element.send_keys(getattr(Keys, extra.upper()))
         except ElementNotInteractableException:
             print("Error: Element is not interactable.")
 
     def find_select(self, by, value, selectValue):
         element = self.find_element(by, value)
         Select(element).select_by_visible_text(selectValue)
+
+    def wait_for_element_clickable(self, by, value, timeout=None):
+        wait = self.wait if timeout is None else WebDriverWait(self.driver, timeout)
+        return wait.until(EC.element_to_be_clickable((by, value)))
     
-    def wait_click(self, by, value):
-        element = self.wait_for_presence_of_element(by, value)
+    def wait_click(self, by, value, timeout=None):
+        element = self.wait_for_element_clickable(by, value)
         element.click()
 
     def login(self, username=kmc_username, password=kmc_password):
         try:
             self.send_keys(By.NAME, "username", username)
-            self.send_keys(By.NAME, "password", password, True)
+            self.send_keys(By.NAME, "password", password, "enter")
         except NoSuchElementException:
             pass
 
