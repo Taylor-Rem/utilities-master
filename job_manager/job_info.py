@@ -51,7 +51,7 @@ class JobInfo:
                 'import_date': f"{self.os_ops.year}-{self.os_ops.month}-{value['day']}",
                 'file_path': f"{download_path}/{re.sub(r'[\s-]+', '_', value['title'].strip().lower())}.csv",
                 'adjusted_file_path': f"{download_path}/cereniti_{value['shortname']}",
-                'dropdowns': ["Utility Reads - Cereniti", "Water" if 'fee' not in value else value['fee']],
+                'dropdowns': ["Utility Reads - Cereniti", "Water" if 'fee' not in value else value['fee']], 
             }
             for value in property_info
         ]
@@ -67,6 +67,7 @@ class JobInfo:
                 'import_date': f"{self.os_ops.year}-{self.os_ops.month}-{row['beacon_import_date']}",
                 'park_num': row['park_num'],
                 'short_name': row['shortened_name'],
+                'entity_code': row['park_num'],
                 'file_path': f"{download_path}/billing_reads-export.csv",
                 'adjusted_file_path': f"{download_path}/beacon_{row['shortened_name']}",
                 'dropdowns': ["Utility Reads - Beacon", "Water"]

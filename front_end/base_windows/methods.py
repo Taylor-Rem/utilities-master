@@ -28,7 +28,7 @@ class Methods(BaseWindow):
         return text_input
     
     def create_date_input(self, date_str):
-        date_input = QDateEdit(self)
+        date_input = NoScrollDateEdit(self)
         date = QDate.fromString(date_str, "yyyy-MM-dd")
         date_input.setDate(date)
         date_input.setCalendarPopup(True)
@@ -41,3 +41,7 @@ class Methods(BaseWindow):
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
+
+class NoScrollDateEdit(QDateEdit):
+    def wheelEvent(self, event):
+        event.ignore()              
