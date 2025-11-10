@@ -64,7 +64,7 @@ class JobInfo:
             {
                 'title': row['full_name'],
                 'propid': row['propid'],
-                'import_date': f"{self.os_ops.year}-{self.os_ops.month}-{row['beacon_import_date']}",
+                'import_date': f"{self.os_ops.year}-{self.os_ops.month}-{row['beacon_import_date']:02d}",
                 'park_num': row['park_num'],
                 'short_name': row['shortened_name'],
                 'entity_code': row['park_num'],
