@@ -52,7 +52,17 @@ class Beacon(JobsBase):
     def split_csv_by_prop(self):
         source_csv = pd.read_csv(self.job_info['info'][0]['file_path'])
         
-        source_csv['prefix'] = source_csv['Account_ID'].astype(str).str.split('_', n=1).str[0].astype(int)
+        # Safely extract prefix, converting non-numeric values to NaN
+        source_csv['prefix'] = pd.to_numeric(
+            source_csv['Account_ID'].astype(str).str.split('_', n=1).str[0],
+            errors='coerce'
+        )
+        
+        # Filter out rows where prefix could not be converted to a number (e.g., 'UNKNOWN')
+        source_csv = source_csv[source_csv['prefix'].notna()]
+        
+        # Ensure prefix is integer type after filtering
+        source_csv['prefix'] = source_csv['prefix'].astype(int)
         
         for val in self.job_info['info']:
             source_csv[source_csv['prefix'] == val['entity_code']].to_csv(
