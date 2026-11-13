@@ -1,5 +1,5 @@
 from OS.os import Os
-from config import download_path, beacon_park_info_path
+from config import download_path, beacon_park_info_path, cereniti_url, beacon_url, abt_url_start, abt_properties
 from job_manager.property_info import property_info_obj
 import pandas as pd
 import re
@@ -16,15 +16,14 @@ class JobInfo:
             case 'abt':
                 self.job_info['info'] = self.abt_import()
             case 'cereniti':
-                self.job_info['cereniti_url'] = "https://www.myspeednet.net"
+                self.job_info['cereniti_url'] = cereniti_url
                 self.job_info['info'] = self.cereniti_import()
             case 'beacon':
-                self.job_info['beacon_url'] = "https://beaconama.net/admin/portfolio/at_a_glance"
+                self.job_info['beacon_url'] = beacon_url
                 self.job_info['info'] = self.beacon_import()
 
     def abt_import(self):
-        abt_url_start = 'http://12.175.8.66/Usage%20Reports/All/KMC%20'
-        property_info = self.get_property_info(["Arapaho Village", "Haven Cove", "Lake Villa"])
+        property_info = self.get_property_info(abt_properties)
 
         return [
             {
